@@ -24,7 +24,7 @@ func TestNormalizarDocumento_EntradaVazia(t *testing.T) {
 	_, erro := NormalizarDocumento(entrada)
 
 	if erro == nil {
-		t.Fatalf("nesperava um erro para entrada vazia")
+		t.Fatalf("esperava um erro para entrada vazia")
 	}
 
 }
