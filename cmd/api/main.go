@@ -1,9 +1,21 @@
 package main
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+)
 
 func main() {
 	mux := http.NewServeMux()
 
-	_ = mux
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		w.Write([]byte(`{"status":"ok"}`))
+	})
+
+	log.Fatal(http.ListenAndServe(":8080", mux))
+
 }
