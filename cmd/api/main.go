@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/DenisGabriel017/fiscalsync-go/internal/platform/config"
+	"github.com/DenisGabriel017/fiscalsync-go/internal/platform/database"
 	"github.com/joho/godotenv"
 )
 
@@ -19,6 +20,20 @@ func main() {
 	}
 
 	cfg := config.Load()
+
+	dbCtx, cancelDB := context.WithTimeout(
+		context.Background(),
+		5*time.Second,
+	)
+	pool, err := database.NewPool(dbCtx, cfg)
+	cancelDB()
+
+	if err != nil {
+		log.Fatalf("conectar ao PostgreSQL: %v", err)
+	}
+
+	defer pool.Close()
+	log.Printf("conexão com PostgreSQL estabelecida")
 
 	mux := http.NewServeMux()
 
@@ -57,7 +72,7 @@ func main() {
 
 	defer cancel()
 
-	err := server.Shutdown(shutdownCtx)
+	err = server.Shutdown(shutdownCtx)
 
 	if err != nil {
 		log.Printf("erro ao encerrar servidor: %v", err)
